@@ -23,15 +23,13 @@ export class Lights{
       scene.add(x);
       // scene.add( new THREE.SpotLightHelper(x));
     });
-    this.directionalLight = new THREE.DirectionalLight(0xfaeacd, 3.0);
-    this.directionalLight.position.set(0, 2, 2);
-    this.directionalLight.castShadow = true;
-    this.directionalLight.shadow.bias = -.001;
-    scene.add(this.directionalLight);
+    this.hemisphereLight = new THREE.HemisphereLight(0xfaeacd, 0x291D13, 2.0);
+    this.hemisphereLight.position.set(0, 2, 2);
+    scene.add(this.hemisphereLight);
   }
   turnOn(){
     this.spotlights.forEach((x)=>{
-      x.intensity = 100.0;
+      x.intensity = 250.0;
     });
   }
 }

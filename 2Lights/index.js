@@ -38,6 +38,32 @@ const partyRelief = new Howl({
   src: ['assets/partyrelief.mp3']
 });
 
+//POST PROCESSING
+import {RenderPass} from "./postprocessing/RenderPass.js";
+import {EffectComposer} from "./postprocessing/EffectComposer.js";
+import {SSAOPass} from "./postprocessing/SSAOPass.js"
+import {UnrealBloomPass} from "./postprocessing/UnrealBloomPass.js"
+import {FXAAShader} from "./postprocessing/FXAAShader.js"
+import {ShaderPass} from "./postprocessing/ShaderPass.js"
+
+let composer = new EffectComposer(renderer);
+let renderScene = new RenderPass(scene, camera);
+composer.addPass(renderScene);
+
+let ssaoPass = new SSAOPass(scene, camera, window.innerWidth, window.innerHeight, 16);
+composer.addPass(ssaoPass);
+
+let bloomPass = new UnrealBloomPass(
+  new THREE.Vector2(window.innerWidth, window.innerHeight),
+  .4,
+  .1,
+  .2
+);
+composer.addPass(bloomPass);
+
+let fxaaPass = new ShaderPass(FXAAShader);
+composer.addPass(fxaaPass);
+
 let animate = false;
 let spinAround = false;
 let delta = 0.0;
@@ -50,7 +76,6 @@ button.addEventListener("click", (e)=>{
   button.classList.add("disappear");
   title.classList.add("upper");
   lightSwitch.play();
-  lights.directionalLight.intensity = 0.0;
   setTimeout(()=>{
     animate = true;
     timer = 0.0;
@@ -66,7 +91,7 @@ function render(time){
   delta = (time - last_time)* 0.001;
   timer += delta;
   last_time = time;
-  renderer.render(scene, camera);
+  composer.render();
   if (animate && timer < 4.0)
     stage.animateCurtains(delta);
   if (spinAround)
